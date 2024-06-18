@@ -9,6 +9,7 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import {z} from "zod";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -18,17 +19,29 @@ import {
  */
 export const createTable = pgTableCreator((name) => `registrationsampleapp_${name}`);
 
-export const posts = createTable(
-  "post",
+export const registrants = createTable(
+  "registrants",
   {
     id: serial("id").primaryKey(),
-    name: varchar("name", { length: 256 }),
+    firstname: varchar("firstname", { length: 256 }).notNull().default(""),
+    lastname: varchar("lastname", { length: 256 }).notNull().default(""),
+    email: varchar("email", { length: 256 }).notNull().default(""),
+    mobile: varchar("mobile", { length: 15 }).notNull().default(""),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updatedAt", { withTimezone: true }),
   },
-  (example) => ({
-    nameIndex: index("name_idx").on(example.name),
+  (table) => ({
+    nameIndex: index("email_idx").on(table.email),
   })
 );
+
+export type IRegistrant = typeof registrants.$inferSelect;
+export type IRegistrantInsert = Omit<IRegistrant, "id" | "createdAt" | "updatedAt">;
+export const RegistrantValidator = z.object({
+  firstname: z.string(),
+  lastname: z.string(),
+  email: z.string().email(),
+  mobile: z.string().regex(/^(09|\+639)\d{9}$/),
+})
