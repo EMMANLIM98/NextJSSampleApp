@@ -15,6 +15,18 @@ export default function Registration() {
     const handleSubmit = async () => {
         const result = RegistrantValidator.safeParse(registrant);
         console.log(result);
+
+        if(!result.success) {
+            const newErrors = {
+                firstname: result.error.flatten().fieldErrors.firstname?.[0] ?? "",
+                lastname: result.error.flatten().fieldErrors.lastname?.[0] ?? "",
+                email: result.error.flatten().fieldErrors.email?.[0] ?? "",
+                mobile: result.error.flatten().fieldErrors.mobile?.[0] ?? "",
+            }            
+        } else {
+            
+        }
+
     }
 
   return (
