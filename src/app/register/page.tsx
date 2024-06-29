@@ -24,7 +24,21 @@ export default function Registration() {
                 mobile: result.error.flatten().fieldErrors.mobile?.[0] ?? "",
             }            
         } else {
-            
+
+        }
+
+        const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(result.data)
+        });
+
+        const apiResponse = await response.json() as { status: string, error?: string };
+        if (apiResponse.status === 'error') {
+        alert(apiResponse.error);
+        return;
         }
 
     }
